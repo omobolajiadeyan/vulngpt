@@ -1,0 +1,6 @@
+# Core: No third-party dependencies needed for rule-based mode
+# Python 3.10+ required
+#
+# For AI-powered analysis, set your Claude API key:
+#   export CLAUDE_API_KEY=your-key-here
+# Get one free at: https://console.anthropic.com
