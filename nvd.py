@@ -6,17 +6,33 @@ import urllib.request
 import urllib.parse
 import json
 import os
+from pathlib import Path
 
 
 NVD_BASE = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+DEFAULT_FIXTURE_DIR = Path(__file__).resolve().parent / "data" / "fixtures"
 
 
-def fetch_cve(cve_id: str) -> dict:
+def load_fixture(cve_id: str, fixture_dir: str | Path = DEFAULT_FIXTURE_DIR) -> dict:
+    """Load a raw NVD-style CVE fixture by ID."""
+    path = Path(fixture_dir) / f"{cve_id.upper()}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"No fixture found for {cve_id} at {path}")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def fetch_cve(cve_id: str, *, fixture_dir: str | Path | None = None, offline: bool = False) -> dict:
     """Fetch a single CVE by ID from the NVD API."""
+    cve_id = cve_id.upper()
+    fixture_root = fixture_dir or DEFAULT_FIXTURE_DIR
+
+    if offline:
+        return load_fixture(cve_id, fixture_root)
+
     params = {"cveId": cve_id}
     url = f"{NVD_BASE}?{urllib.parse.urlencode(params)}"
     headers = {
-        "User-Agent": "VulnGPT/1.0 (github.com/oadeyan/vulngpt)",
+        "User-Agent": "VulnGPT/0.2 (github.com/omobolajiadeyan/vulngpt)",
     }
     api_key = os.environ.get("NVD_API_KEY")
     if api_key:
@@ -29,7 +45,10 @@ def fetch_cve(cve_id: str) -> dict:
     except urllib.error.HTTPError as e:
         raise RuntimeError(f"NVD API error {e.code}: {e.reason}")
     except Exception as e:
-        raise RuntimeError(f"Could not reach NVD: {e}")
+        try:
+            return load_fixture(cve_id, fixture_root)
+        except FileNotFoundError:
+            raise RuntimeError(f"Could not reach NVD and no local fixture exists for {cve_id}: {e}")
 
     vulns = data.get("vulnerabilities", [])
     if not vulns:
@@ -62,7 +81,13 @@ def parse_cve(raw: dict) -> dict:
             if d.get("lang") == "en":
                 cwes.append(d.get("value", ""))
 
-    refs = [r.get("url", "") for r in raw.get("references", [])[:5]]
+    references = []
+    for ref in raw.get("references", [])[:10]:
+        references.append({
+            "url": ref.get("url", ""),
+            "source": ref.get("source", ""),
+            "tags": ref.get("tags", []),
+        })
     published = raw.get("published", "")[:10]
     modified = raw.get("lastModified", "")[:10]
 
@@ -83,6 +108,7 @@ def parse_cve(raw: dict) -> dict:
         "cwes": cwes,
         "published": published,
         "modified": modified,
-        "references": refs,
+        "references": [ref["url"] for ref in references if ref["url"]],
+        "reference_details": references,
         "affected_products": affected[:10],
     }

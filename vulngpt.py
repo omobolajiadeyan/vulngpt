@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-VulnGPT — AI-powered vulnerability analyst.
-Fetches CVE data from NVD and uses Claude AI to generate
-actionable security reports in plain English.
+VulnGPT — vulnerability triage assistant.
+Fetches CVE data from NVD or local fixtures and generates
+actionable security reports.
 Author: Omobolaji Adeyan
 """
 
@@ -46,7 +46,7 @@ def print_banner():
  ╚██╗ ██╔╝██║   ██║██║     ██║╚██╗██║██║   ██║██╔═══╝    ██║
   ╚████╔╝ ╚██████╔╝███████╗██║ ╚████║╚██████╔╝██║        ██║
    ╚═══╝   ╚═════╝ ╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝        ╚═╝
-{RESET}{GRAY}  AI-powered vulnerability analyst | Powered by Claude AI | github.com/oadeyan{RESET}
+{RESET}{GRAY}  CVE triage assistant | NVD + deterministic fallback | github.com/omobolajiadeyan{RESET}
 """)
 
 
@@ -88,6 +88,8 @@ def print_report(cve: dict, analysis: dict):
     print(f"\n{BOLD}EXPLOITATION LIKELIHOOD{RESET}")
     likelihood = analysis.get("exploitation_likelihood", "N/A")
     print(f"  {lik_color}{BOLD}{likelihood}{RESET}  —  {analysis.get('likelihood_justification', '')}")
+    if analysis.get("triage_priority") or analysis.get("confidence"):
+        print(f"  Priority    : {analysis.get('triage_priority', 'N/A')}  |  Confidence: {analysis.get('confidence', 'N/A')}")
 
     print(f"\n{BOLD}REAL-WORLD IMPACT{RESET}")
     impact = analysis.get("real_world_impact", "N/A")
@@ -99,6 +101,11 @@ def print_report(cve: dict, analysis: dict):
 
     print(f"\n{BOLD}DETECTION GUIDANCE{RESET}")
     print(f"  {analysis.get('detection_guidance', 'N/A')}")
+
+    if analysis.get("limitations"):
+        print(f"\n{BOLD}LIMITATIONS{RESET}")
+        for item in analysis["limitations"]:
+            print(f"  - {item}")
 
     if cve.get("references"):
         print(f"\n{BOLD}REFERENCES{RESET}")
@@ -117,13 +124,14 @@ def export_report(cve: dict, analysis: dict, output: str):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="VulnGPT — AI-powered CVE vulnerability analyst",
+        description="VulnGPT — CVE vulnerability triage assistant",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   python vulngpt.py CVE-2021-44228           # Analyze Log4Shell
   python vulngpt.py CVE-2023-44487           # Analyze HTTP/2 Rapid Reset
   python vulngpt.py CVE-2024-3400 --output report.json
+  python vulngpt.py CVE-2021-44228 --offline # Use bundled fixture
 
 Set your Claude API key for AI-powered analysis:
   export CLAUDE_API_KEY=your-key-here
@@ -135,27 +143,32 @@ Get a free API key at: https://console.anthropic.com
     parser.add_argument("cve_id", help="CVE ID to analyze (e.g. CVE-2021-44228)")
     parser.add_argument("--output", "-o", help="Save report to JSON file")
     parser.add_argument("--json", action="store_true", help="Print raw JSON output")
+    parser.add_argument("--offline", action="store_true", help="Use a local fixture instead of the NVD API")
+    parser.add_argument("--fixture-dir", default=None, help="Directory containing raw CVE JSON fixtures")
 
     args = parser.parse_args()
     cve_id = args.cve_id.upper()
     if not cve_id.startswith("CVE-"):
         cve_id = f"CVE-{cve_id}"
 
-    print_banner()
-    print(f"{CYAN}Fetching {cve_id} from NVD...{RESET}")
+    if not args.json:
+        print_banner()
+        source = "local fixture" if args.offline else "NVD"
+        print(f"{CYAN}Loading {cve_id} from {source}...{RESET}")
 
     try:
-        raw = fetch_cve(cve_id)
+        raw = fetch_cve(cve_id, fixture_dir=args.fixture_dir, offline=args.offline)
         cve = parse_cve(raw)
     except (RuntimeError, ValueError) as e:
         print(f"{RED}Error: {e}{RESET}")
         sys.exit(1)
 
     ai_key = os.environ.get("CLAUDE_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")
-    if ai_key:
-        print(f"{CYAN}Analyzing with Claude AI...{RESET}\n")
-    else:
-        print(f"{YELLOW}No CLAUDE_API_KEY set — using rule-based analysis.{RESET}\n")
+    if not args.json:
+        if ai_key:
+            print(f"{CYAN}Analyzing with Claude AI...{RESET}\n")
+        else:
+            print(f"{YELLOW}No CLAUDE_API_KEY set — using rule-based analysis.{RESET}\n")
 
     try:
         analysis = analyze(cve)

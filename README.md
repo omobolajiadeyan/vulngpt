@@ -1,112 +1,170 @@
 # VulnGPT
 
-An AI-powered vulnerability analyst that fetches CVE data from the National Vulnerability Database and uses Claude AI to generate plain-English security reports — including exploitation likelihood, real-world impact, remediation steps, and SOC detection guidance.
+VulnGPT is a CVE vulnerability triage assistant. It fetches CVE data from the National Vulnerability Database, parses CVSS/CWE/reference context, and generates an actionable report with exploitation likelihood, remediation steps, detection guidance, triage priority, confidence, and limitations.
 
-Built out of frustration with CVE descriptions that are technically accurate but practically useless. Most NVD entries tell you *what* is vulnerable but not *what to do about it*. VulnGPT bridges that gap.
+It works without API keys through a deterministic rule-based fallback. Optional Claude/Anthropic analysis can be enabled for narrative enrichment, but the project is designed to remain demoable and testable offline.
 
-## How It Works
+## Why This Exists
 
-1. Fetches the CVE from the NVD REST API
-2. Sends the raw data to Claude AI with a structured analyst prompt
-3. Claude returns a JSON report covering summary, technical breakdown, exploitation likelihood, impact, remediation, and detection guidance
-4. Falls back to a rule-based analysis engine if no API key is configured
+CVE descriptions often explain what is vulnerable, but not what an analyst should do next. VulnGPT turns CVE metadata into a practical triage report:
+
+- What is affected?
+- How likely is exploitation based on CVSS and public reference signals?
+- What priority should the issue receive?
+- What should defenders monitor?
+- What are the limitations of this conclusion?
 
 ## Features
 
-- AI-generated vulnerability reports in plain English
-- Exploitation likelihood assessment (LOW / MEDIUM / HIGH / CRITICAL)
-- Concrete, numbered remediation steps
-- SOC detection guidance — what to look for in logs
-- Structured JSON export for ticket/report integration
-- Works without an API key (rule-based fallback)
-- Zero third-party dependencies
+- Fetches CVE metadata from NVD
+- Offline fixture mode for deterministic demos and tests
+- Parses CVSS v3.1/v3.0, CWE, references, dates, and affected CPEs
+- Rule-based exploitation likelihood and triage priority
+- Optional Claude/Anthropic narrative analysis via `CLAUDE_API_KEY`
+- JSON export for tickets, reports, or automation
+- Zero runtime dependencies in deterministic mode
+- Unit-tested NVD parsing, analysis, and CLI behavior
 
 ## Installation
 
 ```bash
-git clone https://github.com/oadeyan/vulngpt.git
+git clone https://github.com/omobolajiadeyan/vulngpt.git
 cd vulngpt
 python --version  # Python 3.10+ required
+```
+
+Optional local install:
+
+```bash
+python -m pip install .
+vulngpt CVE-2021-44228 --offline
 ```
 
 ## Usage
 
 ```bash
-# Analyze any CVE (rule-based, no API key needed)
-python vulngpt.py CVE-2021-44228    # Log4Shell
-python vulngpt.py CVE-2023-44487    # HTTP/2 Rapid Reset
-python vulngpt.py CVE-2024-3400     # PAN-OS command injection
+# Demo without network access, using the bundled Log4Shell fixture
+python vulngpt.py CVE-2021-44228 --offline
 
-# Enable AI-powered analysis with Claude
-export CLAUDE_API_KEY=your-key-here
-python vulngpt.py CVE-2021-44228
+# Fetch from NVD and use deterministic fallback analysis
+python vulngpt.py CVE-2023-44487
 
 # Export report to JSON
-python vulngpt.py CVE-2021-44228 --output log4shell_report.json
+python vulngpt.py CVE-2021-44228 --offline --output report.json
 
 # Raw JSON output
-python vulngpt.py CVE-2021-44228 --json
+python vulngpt.py CVE-2021-44228 --offline --json
 ```
 
-Get a free Claude API key at: https://console.anthropic.com
+Optional AI-assisted narrative mode:
+
+```bash
+export CLAUDE_API_KEY=your-key-here
+python vulngpt.py CVE-2021-44228
+```
+
+Rule-based mode is preferred for repeatable tests, demos, and CI. AI-assisted mode should not be used with private asset data or customer information.
 
 ## Example Output
 
-```
- VULNGPT
- AI-powered vulnerability analyst | Powered by Claude AI
-
-Fetching CVE-2021-44228 from NVD...
-Analyzing with Claude AI...
-
-═══════════════════════════════════════════════════════════════════
-  CVE-2021-44228  |  CRITICAL — CVSS 10.0
-  Powered by Claude AI
-═══════════════════════════════════════════════════════════════════
+```text
+CVE-2021-44228  |  CRITICAL — CVSS 10.0
+Rule-based analysis (set CLAUDE_API_KEY for AI analysis)
 
 SUMMARY
-  Log4Shell is a critical remote code execution vulnerability in
-  Apache Log4j 2, a widely used Java logging library. Any attacker
-  who can control log messages can execute arbitrary code on the
-  server with no authentication required.
-
-TECHNICAL BREAKDOWN
-  Affected   : Apache Log4j 2.0-beta9 through 2.14.1
-  Capability : Remote code execution via JNDI injection
-  Conditions : Exploitable remotely; no authentication required; no user interaction
-  CWEs       : CWE-917, CWE-502
-  Vector     : CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
+  CVE-2021-44228 is a CRITICAL-severity vulnerability (CVSS 10.0)
+  affecting software systems. It is exploitable remotely over the
+  network, no authentication required, no user interaction needed.
 
 EXPLOITATION LIKELIHOOD
-  CRITICAL  —  Publicly available exploits, actively exploited in the wild.
+  CRITICAL — CVSS base score of 10.0 with vector
+  CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H.
+  Priority    : P1  |  Confidence: HIGH
 
 REMEDIATION STEPS
-  1. Upgrade Log4j to version 2.17.1 or later immediately
-  2. If upgrading is not possible, set log4j2.formatMsgNoLookups=true
-  3. Block LDAP/RMI outbound traffic at the firewall as a workaround
-  4. Scan your environment using tools like log4j-scanner
-  5. Monitor for exploitation attempts in application logs
+  1. Identify affected assets and confirm whether vulnerable product versions are present.
+  2. Apply the vendor security update or upgrade to a fixed version as soon as change control allows.
+  3. If patching is delayed, restrict network access to the affected component and apply vendor workarounds.
+```
+
+## Triage Model
+
+The deterministic fallback uses:
+
+- CVSS base score and severity
+- CVSS vector signals such as network attack, privileges required, and user interaction
+- CWE values
+- NVD reference tags such as vendor advisory, exploit, or third-party advisory
+- Affected product identifiers when available
+
+Priority mapping:
+
+| Likelihood | Priority |
+|---|---|
+| `CRITICAL` | `P1` |
+| `HIGH` | `P2` |
+| `MEDIUM` | `P3` |
+| `LOW` | `P4` |
+
+Limitations:
+
+- It does not know whether your environment is exposed.
+- It does not replace vendor advisories or emergency change control.
+- It does not currently ingest EPSS, CISA KEV, asset inventory, or SBOM context.
+
+## Offline Fixtures
+
+Bundled fixtures live in:
+
+```text
+data/fixtures/
+```
+
+Run with:
+
+```bash
+python vulngpt.py CVE-2021-44228 --offline
+```
+
+Use a custom fixture directory:
+
+```bash
+python vulngpt.py CVE-2021-44228 --offline --fixture-dir ./my-fixtures
 ```
 
 ## Architecture
 
-```
+```text
 vulngpt/
-├── vulngpt.py    # CLI entrypoint + report renderer
-├── nvd.py        # NVD API client + CVE parser
-├── analyst.py    # Claude AI analyst + rule-based fallback
-└── README.md
+├── vulngpt.py        # CLI entrypoint and report renderer
+├── nvd.py            # NVD API client, fixture loader, and CVE parser
+├── analyst.py        # Optional Claude analysis and deterministic fallback
+├── data/fixtures/    # Offline CVE fixtures for demos and tests
+├── tests/            # Unit tests for parser, analyst, and CLI behavior
+└── .github/workflows # CI test workflow
+```
+
+## Verification
+
+```bash
+python -m unittest discover -s tests -v
+python vulngpt.py CVE-2021-44228 --offline --json
 ```
 
 ## Roadmap
 
-- [ ] Batch analysis of multiple CVEs
-- [ ] PDF report generation
-- [ ] Slack/Teams webhook integration for SOC alerting
-- [ ] Local LLM support (Ollama) for air-gapped environments
-- [ ] EPSS score integration for exploitation probability
+- [ ] EPSS probability support
+- [ ] CISA KEV enrichment
+- [ ] Batch analysis for CVE lists
+- [ ] SBOM/package-name matching
+- [ ] SARIF or ticket-friendly export format
+- [ ] Local LLM/Ollama support for air-gapped environments
 
 ## Author
 
-**Omobolaji Adeyan** — Cybersecurity Portfolio Project  
-[GitHub](https://github.com/oadeyan)
+**Omobolaji Adeyan** - Cybersecurity Engineer  
+GitHub: https://github.com/omobolajiadeyan
+
+## License
+
+MIT License. See [LICENSE](LICENSE).
