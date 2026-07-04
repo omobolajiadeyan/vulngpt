@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vulngpt"
+version = "0.2.0"
+description = "CVE vulnerability triage assistant with NVD parsing and deterministic fallback analysis"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Omobolaji Adeyan" }
+]
+keywords = [
+  "cve",
+  "nvd",
+  "vulnerability-management",
+  "security-automation",
+  "incident-response",
+  "devsecops"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security",
+]
+dependencies = []
+
+[project.scripts]
+vulngpt = "vulngpt:main"
+
+[project.urls]
+Homepage = "https://github.com/omobolajiadeyan/vulngpt"
+Repository = "https://github.com/omobolajiadeyan/vulngpt"
+Issues = "https://github.com/omobolajiadeyan/vulngpt/issues"
+
+[tool.setuptools]
+py-modules = ["vulngpt", "nvd", "analyst"]
+
+[tool.setuptools.package-data]
+"*" = ["data/fixtures/*.json"]
