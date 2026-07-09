@@ -163,7 +163,7 @@ python vulngpt.py CVE-2021-44228 --offline --json
 ## Author
 
 **Omobolaji Adeyan** - Cybersecurity Engineer  
-GitHub: https://github.com/omobolajiadeyan
+GitHub: https://github.com/omobolajiadeyan · Website: https://omobolajiadeyan.com
 
 ## License
 
