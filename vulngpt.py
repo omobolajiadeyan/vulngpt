@@ -13,6 +13,11 @@ import os
 from nvd import fetch_cve, parse_cve
 from analyst import analyze
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(errors="replace")
+
 RED    = "\033[91m"
 ORANGE = "\033[38;5;208m"
 YELLOW = "\033[93m"
