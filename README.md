@@ -149,6 +149,22 @@ Use a custom fixture directory:
 python vulngpt.py CVE-2021-44228 --offline --fixture-dir ./my-fixtures
 ```
 
+## Browser Report Viewer
+
+VulnGPT includes a small TypeScript-powered report viewer in `web/`. It turns
+exported JSON into a reviewer-friendly summary with severity, exploitation
+likelihood, remediation, detection guidance, references, and limitations.
+
+```bash
+python3 vulngpt.py CVE-2021-44228 --offline --output web/sample-report.json
+cd web
+python3 -m http.server 8080
+# Open http://127.0.0.1:8080/
+```
+
+The viewer is static and local: no backend, no telemetry, and no CVE report data
+leaves the browser.
+
 ## Architecture
 
 ```text
@@ -157,6 +173,7 @@ vulngpt/
 ├── nvd.py            # NVD API client, fixture loader, and CVE parser
 ├── analyst.py        # Optional Claude analysis and deterministic fallback
 ├── data/fixtures/    # Offline CVE fixtures for demos and tests
+├── web/              # TypeScript report viewer for exported JSON
 ├── tests/            # Unit tests for parser, analyst, and CLI behavior
 └── .github/workflows # CI test workflow
 ```

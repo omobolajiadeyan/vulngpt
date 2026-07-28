@@ -1,0 +1,40 @@
+{
+  "cve": {
+    "id": "CVE-2021-44228",
+    "description": "Apache Log4j2 JNDI features do not protect against attacker controlled LDAP and other JNDI endpoints.",
+    "score": 10,
+    "severity": "CRITICAL",
+    "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+    "cwes": ["CWE-917"],
+    "published": "2021-12-10",
+    "modified": "2024-11-21",
+    "references": [
+      "https://logging.apache.org/log4j/2.x/security.html",
+      "https://www.cisa.gov/news-events/alerts/2021/12/10/apache-log4j-vulnerability-guidance",
+      "https://github.com/advisories/GHSA-jfh8-c2jp-5v3q"
+    ],
+    "affected_products": ["cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*"]
+  },
+  "analysis": {
+    "summary": "CVE-2021-44228 is a CRITICAL-severity vulnerability affecting software systems. It is exploitable remotely over the network, no authentication required, no user interaction needed.",
+    "technical": {
+      "affected_component": "cpe:2.3:a:apache:log4j:*:*:*:*:*:*:*:*",
+      "attacker_capability": "Exploitation may allow CWE-917.",
+      "exploitation_conditions": "exploitable remotely over the network; no authentication required; no user interaction needed"
+    },
+    "exploitation_likelihood": "CRITICAL",
+    "likelihood_justification": "Network attack=True, no privileges required=True, no user interaction=True, high impact=True, public advisory/exploit signal=True.",
+    "triage_priority": "P1",
+    "confidence": "HIGH",
+    "remediation": [
+      "Identify affected assets and confirm whether vulnerable product versions are present.",
+      "Apply the vendor security update or upgrade to a fixed version as soon as change control allows.",
+      "If patching is delayed, restrict network access to the affected component and apply vendor workarounds."
+    ],
+    "detection_guidance": "Monitor logs for unusual access patterns to the affected component. Look for unexpected process spawning, privilege escalation events, or anomalous network connections.",
+    "limitations": [
+      "Rule-based analysis does not confirm exploitability in your environment.",
+      "Prioritization should be adjusted using asset exposure, compensating controls, and business criticality."
+    ]
+  }
+}

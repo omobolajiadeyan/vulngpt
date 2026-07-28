@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VulnGPT Report Viewer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <p class="eyebrow">VulnGPT</p>
+      <h1>CVE Triage Report Viewer</h1>
+      <p class="lede">Turn exported VulnGPT JSON into a clean reviewer-facing summary with severity, exploitation likelihood, remediation, detection guidance, and limitations.</p>
+    </div>
+    <label class="upload">
+      <span>Load report JSON</span>
+      <input id="report-file" type="file" accept="application/json,.json">
+    </label>
+  </header>
+
+  <main>
+    <section class="summary">
+      <article><span>CVE</span><strong id="cve-id">-</strong></article>
+      <article><span>Severity</span><strong id="severity">-</strong></article>
+      <article><span>Priority</span><strong id="priority">-</strong></article>
+      <article><span>Confidence</span><strong id="confidence">-</strong></article>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2 id="report-title">Report</h2>
+          <p id="summary-text">Load a report to begin.</p>
+        </div>
+        <button id="load-sample" type="button">Load sample report</button>
+      </div>
+
+      <div class="details">
+        <article>
+          <h3>Technical Breakdown</h3>
+          <dl id="technical"></dl>
+        </article>
+        <article>
+          <h3>Exploitation Likelihood</h3>
+          <p id="likelihood"></p>
+          <p id="likelihood-why"></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="columns">
+      <article class="panel">
+        <h2>Remediation</h2>
+        <ol id="remediation"></ol>
+      </article>
+      <article class="panel">
+        <h2>Detection Guidance</h2>
+        <p id="detection"></p>
+      </article>
+      <article class="panel">
+        <h2>Limitations</h2>
+        <ul id="limitations"></ul>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2>References</h2>
+      <ul id="references" class="references"></ul>
+    </section>
+
+    <section class="notice">
+      <strong>Trust boundary:</strong> VulnGPT provides first-pass triage from CVE metadata. Adjust priority using real asset exposure, compensating controls, business criticality, and vendor guidance.
+    </section>
+  </main>
+
+  <script src="report-viewer.js"></script>
+</body>
+</html>
