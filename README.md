@@ -2,7 +2,11 @@
 
 VulnGPT is a CVE vulnerability triage assistant. It fetches CVE data from the National Vulnerability Database, parses CVSS/CWE/reference context, and generates an actionable report with exploitation likelihood, remediation steps, detection guidance, triage priority, confidence, and limitations.
 
-It works without API keys through a deterministic rule-based fallback. Optional Claude/Anthropic analysis can be enabled for narrative enrichment, but the project is designed to remain demoable and testable offline.
+The core CLI works without API keys through a deterministic rule-based fallback.
+Optional Claude/Anthropic analysis can be enabled for narrative enrichment, but
+the project is designed to remain demoable and testable offline. The optional
+`web/` report viewer is a static TypeScript interface for reviewing exported
+JSON in a browser.
 
 ## Why This Exists
 

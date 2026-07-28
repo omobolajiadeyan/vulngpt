@@ -31,6 +31,17 @@ python3 vulngpt.py CVE-2021-44228 --offline --json
 python3 vulngpt.py CVE-2021-44228 --offline --output report.json
 ```
 
+Open the optional TypeScript report viewer:
+
+```bash
+cd web
+python3 -m http.server 8080
+# Open http://127.0.0.1:8080/
+```
+
+The viewer loads a bundled sample report by default and can also open an
+exported VulnGPT JSON report from your local machine.
+
 ## Expected Outcome
 
 The terminal report should show:
