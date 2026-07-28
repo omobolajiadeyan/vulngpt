@@ -14,6 +14,23 @@ CVE descriptions often explain what is vulnerable, but not what an analyst shoul
 - What should defenders monitor?
 - What are the limitations of this conclusion?
 
+## For External Reviewers
+
+If you are evaluating this project, start here:
+
+- [External Evaluator Guide](docs/EVALUATOR_GUIDE.md) - five-minute review path, expected outcome, and trust boundaries
+- [Sample Output](docs/SAMPLE_OUTPUT.md) - what the offline demo should produce
+
+Fastest safe demo:
+
+```bash
+python3 vulngpt.py CVE-2021-44228 --offline
+python3 vulngpt.py CVE-2021-44228 --offline --output report.json
+```
+
+The bundled fixture keeps the demo deterministic and does not require network
+access or API keys.
+
 ## Features
 
 - Fetches CVE metadata from NVD
