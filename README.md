@@ -23,7 +23,10 @@ CVE descriptions often explain what is vulnerable, but not what an analyst shoul
 If you are evaluating this project, start here:
 
 - [External Evaluator Guide](docs/EVALUATOR_GUIDE.md) - five-minute review path, expected outcome, and trust boundaries
+- [Project Evidence](docs/PROJECT_EVIDENCE.md) - reproducible offline evidence, viewer path, and limitations
 - [Sample Output](docs/SAMPLE_OUTPUT.md) - what the offline demo should produce
+
+![VulnGPT evidence](docs/assets/vulngpt-evidence.svg)
 
 Fastest safe demo:
 
@@ -176,6 +179,7 @@ vulngpt/
 ├── vulngpt.py        # CLI entrypoint and report renderer
 ├── nvd.py            # NVD API client, fixture loader, and CVE parser
 ├── analyst.py        # Optional Claude analysis and deterministic fallback
+├── docs/             # Evaluator guide, sample output, and evidence notes
 ├── data/fixtures/    # Offline CVE fixtures for demos and tests
 ├── web/              # TypeScript report viewer for exported JSON
 ├── tests/            # Unit tests for parser, analyst, and CLI behavior
