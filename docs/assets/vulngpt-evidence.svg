@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">VulnGPT evidence screenshot</title>
+  <desc id="desc">A professional CVE triage report for CVE-2021-44228 with severity, priority, remediation, detection, and limitations.</desc>
+  <rect width="1280" height="760" fill="#eef3f8"/>
+  <rect x="64" y="54" width="1152" height="652" rx="10" fill="#ffffff" stroke="#d7e0ec"/>
+  <text x="104" y="112" fill="#2563eb" font-family="Arial, sans-serif" font-size="17" font-weight="700">VULNGPT</text>
+  <text x="104" y="166" fill="#172033" font-family="Arial, sans-serif" font-size="56" font-weight="800">CVE Triage Report Viewer</text>
+  <text x="104" y="210" fill="#64748b" font-family="Arial, sans-serif" font-size="22">Offline fixture analysis with deterministic priority, remediation, detection guidance, and limitations.</text>
+  <rect x="986" y="86" width="154" height="42" rx="21" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="1016" y="114" fill="#b42318" font-family="Arial, sans-serif" font-size="16" font-weight="800">P1 priority</text>
+
+  <g>
+    <rect x="104" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="128" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">CVE</text>
+    <text x="128" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="31" font-weight="800">CVE-2021-44228</text>
+    <rect x="370" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="394" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">SEVERITY</text>
+    <text x="394" y="338" fill="#b42318" font-family="Arial, sans-serif" font-size="36" font-weight="800">CRITICAL</text>
+    <rect x="636" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="660" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">CVSS</text>
+    <text x="660" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="42" font-weight="800">10.0</text>
+    <rect x="902" y="250" width="238" height="112" rx="8" fill="#f8fafc" stroke="#d7e0ec"/>
+    <text x="926" y="292" fill="#64748b" font-family="Arial, sans-serif" font-size="15" font-weight="700">CONFIDENCE</text>
+    <text x="926" y="338" fill="#172033" font-family="Arial, sans-serif" font-size="36" font-weight="800">HIGH</text>
+  </g>
+
+  <rect x="104" y="404" width="496" height="214" rx="8" fill="#ffffff" stroke="#d7e0ec"/>
+  <text x="134" y="448" fill="#172033" font-family="Arial, sans-serif" font-size="25" font-weight="800">Remediation</text>
+  <text x="134" y="488" fill="#344154" font-family="Arial, sans-serif" font-size="19">1. Identify affected assets and versions.</text>
+  <text x="134" y="526" fill="#344154" font-family="Arial, sans-serif" font-size="19">2. Apply vendor security update quickly.</text>
+  <text x="134" y="564" fill="#344154" font-family="Arial, sans-serif" font-size="19">3. Restrict exposure while patching.</text>
+
+  <rect x="628" y="404" width="512" height="214" rx="8" fill="#ffffff" stroke="#d7e0ec"/>
+  <text x="658" y="448" fill="#172033" font-family="Arial, sans-serif" font-size="25" font-weight="800">Detection Guidance</text>
+  <text x="658" y="488" fill="#344154" font-family="Arial, sans-serif" font-size="19">Monitor exploit attempts, unusual outbound traffic,</text>
+  <text x="658" y="526" fill="#344154" font-family="Arial, sans-serif" font-size="19">new processes, suspicious downloads, and known IOCs.</text>
+  <text x="658" y="584" fill="#64748b" font-family="Arial, sans-serif" font-size="17">Rule-based deterministic mode. No API key required.</text>
+
+  <rect x="104" y="642" width="324" height="40" rx="20" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="128" y="668" fill="#1d4ed8" font-family="Arial, sans-serif" font-size="16" font-weight="800">Offline CVE fixture mode</text>
+  <rect x="450" y="642" width="316" height="40" rx="20" fill="#ecfdf3" stroke="#bbf7d0"/>
+  <text x="474" y="668" fill="#166534" font-family="Arial, sans-serif" font-size="16" font-weight="800">JSON + browser viewer</text>
+</svg>
