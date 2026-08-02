@@ -206,6 +206,18 @@ python vulngpt.py CVE-2021-44228 --offline --json
 - [ ] SARIF or ticket-friendly export format
 - [ ] Local LLM/Ollama support for air-gapped environments
 
+## Part of the Security Automation Toolkit
+
+VulnGPT is one piece of a practical security-automation toolkit. The others:
+
+- **[PhishGuard AI](https://github.com/omobolajiadeyan/phishguard-ai)** — explainable offline phishing detection (flagship, on GitHub Marketplace)
+- **[Secrets Scanner](https://github.com/omobolajiadeyan/secrets-scanner)** — exposed-credential detection with redacted SARIF/JSON evidence
+- **[Log Analyzer](https://github.com/omobolajiadeyan/log-analyzer)** — MITRE ATT&CK-mapped log threat detection
+- **[BehaviorSense](https://github.com/omobolajiadeyan/behaviorsense)** — UEBA-style behavioral anomaly detection
+- **[CVE Dashboard](https://github.com/omobolajiadeyan/cve-dashboard)** — live NVD vulnerability intelligence
+
+Full portfolio: [github.com/omobolajiadeyan](https://github.com/omobolajiadeyan)
+
 ## Author
 
 **Omobolaji Adeyan** - Cybersecurity Engineer  
