@@ -1,5 +1,9 @@
 # VulnGPT
 
+[![Tests](https://github.com/omobolajiadeyan/vulngpt/actions/workflows/tests.yml/badge.svg)](https://github.com/omobolajiadeyan/vulngpt/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Maintainer](https://img.shields.io/badge/Maintainer-Omobolaji_Adeyan-0A66C2?style=flat-square)](https://github.com/omobolajiadeyan)
+
 VulnGPT is a CVE vulnerability triage assistant. It fetches CVE data from the National Vulnerability Database, parses CVSS/CWE/reference context, and generates an actionable report with exploitation likelihood, remediation steps, detection guidance, triage priority, confidence, and limitations.
 
 The core CLI works without API keys through a deterministic rule-based fallback.
