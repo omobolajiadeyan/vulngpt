@@ -34,11 +34,12 @@ SEVERITY_COLOR = {
     "LOW": GREEN,
 }
 
-LIKELIHOOD_COLOR = {
+EXPLOITABILITY_COLOR = {
     "CRITICAL": RED,
     "HIGH": ORANGE,
     "MEDIUM": YELLOW,
     "LOW": GREEN,
+    "UNKNOWN": GRAY,
 }
 
 
@@ -57,7 +58,8 @@ def print_banner():
 
 def print_report(cve: dict, analysis: dict):
     sev_color = SEVERITY_COLOR.get(str(cve.get("severity", "")).upper(), GRAY)
-    lik_color = LIKELIHOOD_COLOR.get(str(analysis.get("exploitation_likelihood", "")).upper(), GRAY)
+    exploitability = analysis.get("heuristic_exploitability", "UNKNOWN")
+    exploitability_color = EXPLOITABILITY_COLOR.get(str(exploitability).upper(), GRAY)
     ai_powered = "note" not in analysis
 
     print(f"\n{'═'*65}")
@@ -90,11 +92,22 @@ def print_report(cve: dict, analysis: dict):
         print(f"  CWEs       : {', '.join(cve['cwes'])}")
     print(f"  Vector     : {GRAY}{cve.get('vector', 'N/A')}{RESET}")
 
-    print(f"\n{BOLD}EXPLOITATION LIKELIHOOD{RESET}")
-    likelihood = analysis.get("exploitation_likelihood", "N/A")
-    print(f"  {lik_color}{BOLD}{likelihood}{RESET}  —  {analysis.get('likelihood_justification', '')}")
+    print(f"\n{BOLD}EXPLOITABILITY AND ACTIVE EXPLOITATION{RESET}")
+    print(
+        f"  CVSS-based potential : "
+        f"{exploitability_color}{BOLD}{exploitability}{RESET}  —  "
+        f"{analysis.get('exploitability_basis', '')}"
+    )
+    print(
+        f"  Active exploitation : {analysis.get('active_exploitation_status', 'UNKNOWN')}  —  "
+        f"{analysis.get('active_exploitation_evidence', 'Not assessed.')}"
+    )
     if analysis.get("triage_priority") or analysis.get("confidence"):
-        print(f"  Priority    : {analysis.get('triage_priority', 'N/A')}  |  Confidence: {analysis.get('confidence', 'N/A')}")
+        print(
+            f"  Priority            : {analysis.get('triage_priority', 'N/A')}  |  "
+            f"Confidence: {analysis.get('confidence', 'N/A')} "
+            f"({analysis.get('confidence_basis', 'metadata-based assessment')})"
+        )
 
     print(f"\n{BOLD}REAL-WORLD IMPACT{RESET}")
     impact = analysis.get("real_world_impact", "N/A")
