@@ -19,6 +19,8 @@ class CliTests(unittest.TestCase):
         self.assertTrue(result.stdout.lstrip().startswith("{"))
         payload = json.loads(result.stdout)
         self.assertEqual(payload["cve"]["id"], "CVE-2021-44228")
+        self.assertEqual(payload["analysis"]["heuristic_exploitability"], "CRITICAL")
+        self.assertEqual(payload["analysis"]["active_exploitation_status"], "UNKNOWN")
         self.assertEqual(payload["analysis"]["triage_priority"], "P1")
 
     def test_offline_export(self):

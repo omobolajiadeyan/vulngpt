@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Maintainer](https://img.shields.io/badge/Maintainer-Omobolaji_Adeyan-0A66C2?style=flat-square)](https://github.com/omobolajiadeyan)
 
-VulnGPT is a CVE vulnerability triage assistant. It fetches CVE data from the National Vulnerability Database, parses CVSS/CWE/reference context, and generates an actionable report with exploitation likelihood, remediation steps, detection guidance, triage priority, confidence, and limitations.
+VulnGPT is a CVE vulnerability triage assistant. It fetches CVE data from the National Vulnerability Database, parses CVSS/CWE/reference context, and generates an actionable report with heuristic exploitability, active-exploitation status, remediation steps, detection guidance, triage priority, confidence, and limitations.
 
 The core CLI works without API keys through a deterministic rule-based fallback.
 Optional Claude/Anthropic analysis can be enabled for narrative enrichment, but
@@ -17,7 +17,8 @@ JSON in a browser.
 CVE descriptions often explain what is vulnerable, but not what an analyst should do next. VulnGPT turns CVE metadata into a practical triage report:
 
 - What is affected?
-- How likely is exploitation based on CVSS and public reference signals?
+- What do CVSS and public references indicate about intrinsic exploitability?
+- Is active exploitation actually confirmed?
 - What priority should the issue receive?
 - What should defenders monitor?
 - What are the limitations of this conclusion?
@@ -47,7 +48,7 @@ access or API keys.
 - Fetches CVE metadata from NVD
 - Offline fixture mode for deterministic demos and tests
 - Parses CVSS v3.1/v3.0, CWE, references, dates, and affected CPEs
-- Rule-based exploitation likelihood and triage priority
+- Rule-based CVSS-based exploitability indicators and triage priority
 - Optional Claude/Anthropic narrative analysis via `CLAUDE_API_KEY`
 - JSON export for tickets, reports, or automation
 - Zero runtime dependencies in deterministic mode
@@ -97,46 +98,55 @@ Rule-based mode is preferred for repeatable tests, demos, and CI. AI-assisted mo
 
 ```text
 CVE-2021-44228  |  CRITICAL — CVSS 10.0
-Rule-based analysis (set CLAUDE_API_KEY for AI analysis)
+Rule-based analysis (set CLAUDE_API_KEY for AI narrative enrichment)
 
 SUMMARY
   CVE-2021-44228 is a CRITICAL-severity vulnerability (CVSS 10.0)
-  affecting software systems. It is exploitable remotely over the
-  network, no authentication required, no user interaction needed.
+  affecting software systems. CVSS indicators suggest it is remotely
+  exploitable, requires no authentication, and needs no user interaction.
 
-EXPLOITATION LIKELIHOOD
-  CRITICAL — CVSS base score of 10.0 with vector
+EXPLOITABILITY AND ACTIVE EXPLOITATION
+  CVSS-based potential : CRITICAL — CVSS base score 10.0 and vector
   CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H.
-  Priority    : P1  |  Confidence: HIGH
+  Active exploitation : UNKNOWN — no KEV lookup or environment telemetry.
+  Priority            : P1  |  Confidence: HIGH (CVSS metadata only)
 
 REMEDIATION STEPS
-  1. Identify affected assets and confirm whether vulnerable product versions are present.
-  2. Apply the vendor security update or upgrade to a fixed version as soon as change control allows.
-  3. If patching is delayed, restrict network access to the affected component and apply vendor workarounds.
+  1. Inventory potentially affected assets and confirm product versions against the vendor advisory.
+  2. Apply the vendor security update or upgrade affected instances to a fixed version, prioritizing by this CVSS-based baseline and local exposure.
+  3. If patching is delayed, apply vendor-approved mitigations and restrict access to affected components where feasible.
 ```
 
 ## Triage Model
 
-The deterministic fallback uses:
+The deterministic fallback reports CVSS-based **heuristic exploitability**, not a
+probability of attacks or confirmation of active exploitation. It separates:
 
 - CVSS base score and severity
 - CVSS vector signals such as network attack, privileges required, and user interaction
-- CWE values
-- NVD reference tags such as vendor advisory, exploit, or third-party advisory
+- Public reference tags as references/signals only; even an `Exploit` tag does not
+  establish active exploitation
+- An `active_exploitation_status` of `UNKNOWN`, because VulnGPT does not query
+  CISA KEV or environment telemetry
 - Affected product identifiers when available
 
-Priority mapping:
+Baseline priority mapping uses CVSS score (adjust it for asset exposure, controls,
+and business criticality):
 
-| Likelihood | Priority |
+| CVSS score | Priority |
 |---|---|
-| `CRITICAL` | `P1` |
-| `HIGH` | `P2` |
-| `MEDIUM` | `P3` |
-| `LOW` | `P4` |
+| `9.0–10.0` | `P1` |
+| `7.0–8.9` | `P2` |
+| `4.0–6.9` | `P3` |
+| `0.0–3.9` | `P4` |
+| unavailable/invalid | `UNRATED` |
+
+Confidence describes completeness of the CVSS metadata used for this baseline;
+it is not confidence that exploitation is occurring.
 
 Limitations:
 
-- It does not know whether your environment is exposed.
+- It does not establish whether exploitation is occurring or whether your environment is exposed.
 - It does not replace vendor advisories or emergency change control.
 - It does not currently ingest EPSS, CISA KEV, asset inventory, or SBOM context.
 
